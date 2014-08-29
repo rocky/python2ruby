@@ -7,6 +7,10 @@ end's to the python code"
 	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
     (set-visited-file-name ruby-name)
     (dolist (tuple '(
+		     ("\\([ 	]*\\)continue" "\\1next")
+		     ("^\\([ 	]*\\)if not" "\\1unless")
+		     (" is not None" "")
+		     (" is None" ".nil?")
 		     ("len(\\(.*\\))" "\\1.size")
 		     ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
 		      "\\1.kind_of?(\\2)")
@@ -22,9 +26,10 @@ end's to the python code"
 		     ("class \\(.*\\):$" "class \\1") ;; has to come after above
 		     ("def __repr__(self):$" "def inspect")
 		     ("def __str__(self):$" "def str")
-		     ("def __init__(self\\(.*\\)):$" "def initialize(\\1")
+		     ("def __init__(self, \\(.*\\)):$" "def initialize(\\1")
+		     ("def __init__(self):$" "def initialize")
 
-		     ("def \\(.*\\)(\\(.*\\)[*][*]\\(.*\\)):$" "def \\1(\\2\\3={}):")
+		     ("def \\(.*\\)(\\(.*\\)[*][*]\\(.*\\)):$" "def \\1(\\2\\3={})")
 
 		     ("def \\(.*\\)(self, \\(.*\\)):$" "def \\1(\\2)")
 		     ("def \\(.*\\)(self):$" "def \\1")
@@ -34,9 +39,7 @@ end's to the python code"
 		     ("except \\(.*\\):" "rescue \\1")
 		     ("except:" "rescue")
 		     ("else:" "else")
-		     ("continue" "next")
 		     ("basestring" "String")
-		     ("if not" "unless")
 		     (".lower" ".downcase")
 		     (".upper" ".upcase")
 		     ("def \\(.*\\)):$" "def \\1)")
