@@ -7,13 +7,23 @@ end's to the python code"
 	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
     (set-visited-file-name ruby-name)
     (dolist (tuple '(
+		     ("len(\\(.*\\))" "\\1.size")
+		     ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
+		      "\\1.kind_of?(\\2)")
+		     ("re.sub(\\(.*\\),[ ]*\\(.*\\),[ ]*\\(.*\\))"
+		      "\\3.gsub(\\1, \\2)")
+		     ("re.match(\\(.*\\),[ ]*\\(.*\\))" "\\1.match(\\2)")
+		     ("r'\\(.*\\)'" "%r{\\1}")
+		     ("r\"\\(.*\\)\"" "%r{\\1}")
+		     ("import re$" "#uses regexps")
+		     ("import urllib" "require 'uri'")
+		     ("import \\(.*\\)$" "require '\\1'")
 		     ("class \\(.*\\)(\\(.*\\)):$" "class \\1 < \\2")
 		     ("class \\(.*\\):$" "class \\1") ;; has to come after above
 		     ("def __repr__(self):$" "def inspect")
 		     ("def __str__(self):$" "def str")
 		     ("def __init__(self\\(.*\\)):$" "def initialize(\\1")
 
-		     ;; Not complete to Ruby. Below regexps finish the job
 		     ("def \\(.*\\)(\\(.*\\)[*][*]\\(.*\\)):$" "def \\1(\\2\\3={}):")
 
 		     ("def \\(.*\\)(self, \\(.*\\)):$" "def \\1(\\2)")
@@ -24,6 +34,8 @@ end's to the python code"
 		     ("except \\(.*\\):" "rescue \\1")
 		     ("except:" "rescue")
 		     ("else:" "else")
+		     ("continue" "next")
+		     ("basestring" "String")
 		     ("if not" "unless")
 		     (".lower" ".downcase")
 		     (".upper" ".upcase")
