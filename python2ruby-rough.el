@@ -20,6 +20,8 @@ end's to the python code"
 		     (" is not None" "")
 		     (" is None" ".nil?")
 		     ("len(\\(.*\\))" "\\1.size")
+		     ("repr(\\(.*\\))" "\\1.inspect")
+		     ("str(\\(.*\\))" "\\1.to_s")
 		     ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
 		      "\\1.kind_of?(\\2)")
 		     ("re.sub(\\(.*\\),[ ]*\\(.*\\),[ ]*\\(.*\\))"
@@ -33,7 +35,7 @@ end's to the python code"
 		     ("class \\(.*\\)(\\(.*\\)):$" "class \\1 < \\2")
 		     ("class \\(.*\\):$" "class \\1") ;; has to come after above
 		     ("def __repr__(self):$" "def inspect")
-		     ("def __str__(self):$" "def str")
+		     ("def __str__(self):$" "def to_s")
 		     ("def __init__(self, \\(.*\\)):$" "def initialize(\\1")
 		     ("def __init__(self):$" "def initialize")
 
