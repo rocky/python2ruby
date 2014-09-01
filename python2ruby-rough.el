@@ -7,8 +7,16 @@ end's to the python code"
 	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
     (set-visited-file-name ruby-name)
     (dolist (tuple '(
-		     ("\\([ 	]*\\)continue" "\\1next")
-		     ("^\\([ 	]*\\)if not" "\\1unless")
+		     ;; Python's dictionary update is Ruby's Hash merge
+		     ;; We rely on interactive aspect to allow a person to
+		     ;; determine which is applicable. So we pur this first
+		     ;; before the user gets tired.
+		     ("\\.update(" ".merge(")
+
+
+		     ("\\([ 	]\\|^\\)continue\\($\\|[ 	]\\)" "\\1next\\2")
+		     ("\\([ 	]\\|^\\)if not\\([ 	]\\|$\\)" "\\1unless\\2")
+
 		     (" is not None" "")
 		     (" is None" ".nil?")
 		     ("len(\\(.*\\))" "\\1.size")
@@ -45,6 +53,7 @@ end's to the python code"
 		     ("def \\(.*\\)):$" "def \\1)")
 		     ("None" "nil") ("True" "true") ("False" "false")
 		     ("try:" "begin")
+
 		     ))
       (goto-char (point-min))
       (query-replace-regexp (car tuple) (cdr tuple))
