@@ -13,6 +13,12 @@ end's to the python code"
 		     ;; before the user gets tired.
 		     ("\\.update(" ".merge(")
 
+		     ;; Quoteed hash elements, e.g
+		     ;; 'abc' => Def
+		     ("\\('[^']+'\\):\\([ 	]\\)*\\(.+\\)$" ;; '
+		      "\\1\\2 => \\3")
+		     ("\\(\"[^\"]+\"\\):\\([ 	]\\)*\\(.+\\)$"
+		      "\\1\\2 => \\3")
 
 		     ("\\([ 	]\\|^\\)continue\\($\\|[ 	]\\)" "\\1next\\2")
 		     ("\\([ 	]\\|^\\)if not\\([ 	]\\|$\\)" "\\1unless\\2")
