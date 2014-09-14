@@ -7,11 +7,12 @@ end's to the python code"
 	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
     (set-visited-file-name ruby-name)
     (dolist (tuple '(
-		     ;; Python's dictionary update is Ruby's Hash merge
-		     ;; We rely on interactive aspect to allow a person to
-		     ;; determine which is applicable. So we pur this first
-		     ;; before the user gets tired.
-		     ("\\.update(" ".merge(")
+		     ;; Python's dictionary update is Ruby's Hash
+		     ;; merge or merge!  We rely on interactive aspect
+		     ;; to allow a person to determine which is
+		     ;; applicable. So we put this first before the
+		     ;; user gets tired.
+		     ("\\.update(" ".merge!(")
 
 		     ;; Quoteed hash elements, e.g
 		     ;; 'abc' => Def
