@@ -14,6 +14,10 @@ end's to the python code"
 		     ;; user gets tired.
 		     ("\\.update(" ".merge!(")
 
+		     ("\\.replace(" ".gsub(")
+
+		     ("\\zip(\\(.+\\),[ ]*\\(.+\\))" "\\1.zip(\\2)")
+
 		     ;; Quoteed hash elements, e.g
 		     ;; 'abc' => Def
 		     ("\\('[^']+'\\):\\([ 	]\\)*\\(.+\\)$" ;; '
