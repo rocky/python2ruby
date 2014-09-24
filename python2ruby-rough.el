@@ -14,11 +14,21 @@ end's to the python code"
 		     ;; user gets tired.
 		     ("\\.update(" ".merge!(")
 
+		     ;; re.search(a, b) => a.match(b)
+		     ("re\\.search\\(.*\\), [ ]*" "\\1.match(")
+
 		     ("\\.replace(" ".gsub(")
 
-		     ("\\zip(\\(.+\\),[ ]*\\(.+\\))" "\\1.zip(\\2)")
+		     ;; List comprehension
+		     ;; [fn(x) for x in rows] =>
+		     ;; rows.map{|x| fn(x)}
+		     ("\\[\\(.+\\)[ ]+for \\(.+\\) in \\(.+\\)\\]"
+		      "\\3.map{|\\2| \\1}")
 
-		     ;; Quoteed hash elements, e.g
+		     ;; zip(cols, coltypes) => cols.zip(coltypes)
+		     ("\\zip(\\([^*].*\\),[ ]*\\(.+\\))" "\\1.zip(\\2)")
+
+		     ;; Quoted hash elements, e.g
 		     ;; 'abc' => Def
 		     ("\\('[^']+'\\):\\([ 	]\\)*\\(.+\\)$" ;; '
 		      "\\1\\2 => \\3")
@@ -33,8 +43,12 @@ end's to the python code"
 		     ("len(\\(.*\\))" "\\1.size")
 		     ("repr(\\(.*\\))" "\\1.inspect")
 		     ("str(\\(.*\\))" "\\1.to_s")
+
+		     ;; isinstance(tablefmt, TableFormat) =>
+		     ;; tablefmt.kind_of?(TableFormat)
 		     ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
 		      "\\1.kind_of?(\\2)")
+
 		     ("re.sub(\\(.*\\),[ ]*\\(.*\\),[ ]*\\(.*\\))"
 		      "\\3.gsub(\\1, \\2)")
 		     ("re.match(\\(.*\\),[ ]*\\(.*\\))" "\\1.match(\\2)")
