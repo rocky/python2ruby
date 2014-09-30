@@ -28,5 +28,6 @@
 (check-replace "@dataset.query :paging=>false, :limit => limit"
 	       "@dataset.query :paging=>False, :limit => limit")
 (check-replace "exit 5" "import sys\nsys.exit(5)")
+(check-replace "assert_raise IndexError" "self.assertRaises IndexError")
 
 (end-tests)

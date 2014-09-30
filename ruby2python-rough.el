@@ -16,6 +16,9 @@ corresponding Ruby strings"
 		    ("end"       "pass")
 		    (".upcase"   ".upper" )
 
+		    ("assert_equal" "self.assertEqual")
+		    ("assert_raise" "self.assertRaises")
+
 		    ;; Note have to handle things like
 		    ;; ... False,
 		    ;; xxx=>true,
