@@ -1,11 +1,6 @@
-(defun python2ruby-rough ()
-  "A rough-cut conversion of common python lingo to the
-corresponding ruby lingo. This should be done after adding Ruby
-end's to the python code"
-  (interactive "")
-  (let* ((orig-name (buffer-name))
-	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
-    (set-visited-file-name ruby-name)
+(defun python2ruby-regexp-search-replace (from)
+  "A rough-cut conversion of common Python strings to
+corresponding Ruby strings"
     (dolist (tuple '(
 		     ;; Python's dictionary update is Ruby's Hash
 		     ;; merge or merge!  We rely on interactive aspect
@@ -57,6 +52,8 @@ end's to the python code"
 		     ("r'\\(.*\\)'" "%r{\\1}")
 		     ("r\"\\(.*\\)\"" "%r{\\1}")
 		     ("import re$" "#uses regexps")
+		     ("import[:blank]+ urllib" "require 'uri'")
+		     ("import urllib" "require 'uri'")
 		     ("import urllib" "require 'uri'")
 		     ("import \\(.*\\)$" "require '\\1'")
 		     ("class \\(.*\\)(\\(.*\\)):$" "class \\1 < \\2")
@@ -83,12 +80,29 @@ end's to the python code"
 		     ("None" "nil") ("True" "true") ("False" "false")
 		     ("try:" "begin")
 
-		     ("print\\([ 	]*.*\\)$" "puts \\1")
+		     ("print[:blank:]+\\(.*\\)$" "puts \\1")
 
 		     ;; The following is just for the SolveBio API.
 		     ;; It does no harm otherwise.
 		     ("SolveBio::" "solvebio.")
 		     ))
-      (goto-char (point-min))
+      (goto-char from)
       (query-replace-regexp (car tuple) (cdr tuple))
-      )))
+      )
+)
+
+(defun python2ruby-rough ()
+  "A rough-cut conversion of common Ruby lingo to the
+corresponding Python lingo."
+  (interactive "")
+  (let* ((orig-name (buffer-name))
+	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
+    (set-visited-file-name ruby-name)
+    (ruby-mode)
+    (python2ruby-regexp-search-replace (point-min))
+    ))
+
+(defun ruby2python-region-rough (from)
+  (interactive "m")
+  (ruby2python-regexp-search-replace from)
+)
