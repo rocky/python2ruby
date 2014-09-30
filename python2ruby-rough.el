@@ -38,6 +38,8 @@ end's to the python code"
 		     ("\\([ 	]\\|^\\)continue\\($\\|[ 	]\\)" "\\1next\\2")
 		     ("\\([ 	]\\|^\\)if not\\([ 	]\\|$\\)" "\\1unless\\2")
 
+		     ("#!/usr/bin/env python" "#!/usr/bin/env ruby")
+
 		     (" is not None" "")
 		     (" is None" ".nil?")
 		     ("len(\\(.*\\))" "\\1.size")
@@ -81,6 +83,11 @@ end's to the python code"
 		     ("None" "nil") ("True" "true") ("False" "false")
 		     ("try:" "begin")
 
+		     ("print\\([ 	]*.*\\)$" "puts \\1")
+
+		     ;; The following is just for the SolveBio API.
+		     ;; It does no harm otherwise.
+		     ("SolveBio::" "solvebio.")
 		     ))
       (goto-char (point-min))
       (query-replace-regexp (car tuple) (cdr tuple))
