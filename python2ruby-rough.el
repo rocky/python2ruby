@@ -1,91 +1,98 @@
 (defun python2ruby-regexp-search-replace (&optional start end replace-fn)
   "A rough-cut conversion of common Python strings to
 corresponding Ruby strings"
-    (dolist (args '(
-		    ;; Python's dictionary update is Ruby's Hash
-		    ;; merge or merge!  We rely on interactive aspect
-		    ;; to allow a person to determine which is
-		    ;; applicable. So we put this first before the
-		    ;; user gets tired.
-		    ("\\.update(" ".merge!(")
+  (dolist (args '(
 
-		    ;; re.search(a, b) => a.match(b)
-		    ("re\\.search\\(.*\\), [ ]*" "\\1.match(")
+		  ;; Some unit testing things
+		  ("import unitttest" "require 'unittest'")
+		  ;; Should come before True -> true
+		  ("self.assertTrue" "assert")
+		  ("self.assertEqual" "assert_equal")
 
-		    ("\\.replace(" ".gsub(")
+		  ;; Python's dictionary update is Ruby's Hash
+		  ;; merge or merge!  We rely on interactive aspect
+		  ;; to allow a person to determine which is
+		  ;; applicable. So we put this first before the
+		  ;; user gets tired.
+		  ("\\.update(" ".merge!(")
 
-		    ;; List comprehension
-		    ;; [fn(x) for x in rows] =>
-		    ;; rows.map{|x| fn(x)}
-		    ("\\[\\(.+\\)[ ]+for \\(.+\\) in \\(.+\\)\\]"
-		     "\\3.map{|\\2| \\1}")
+		  ;; re.search(a, b) => a.match(b)
+		  ("re\\.search\\(.*\\), [ ]*" "\\1.match(")
 
-		    ;; zip(cols, coltypes) => cols.zip(coltypes)
-		    ("\\zip(\\([^*].*\\),[ ]*\\(.+\\))" "\\1.zip(\\2)")
+		  ("\\.replace(" ".gsub(")
 
-		    ;; Quoted hash elements, e.g
-		    ;; 'abc' => Def
-		    ("\\('[^']+'\\):\\([ 	]\\)*\\(.+\\)$" ;; '
-		     "\\1\\2 => \\3")
-		    ("\\(\"[^\"]+\"\\):\\([ 	]\\)*\\(.+\\)$"
-		     "\\1\\2 => \\3")
+		  ;; List comprehension
+		  ;; [fn(x) for x in rows] =>
+		  ;; rows.map{|x| fn(x)}
+		  ("\\[\\(.+\\)[ ]+for \\(.+\\) in \\(.+\\)\\]"
+		   "\\3.map{|\\2| \\1}")
 
-		    ("\\([ 	]\\|^\\)continue\\($\\|[ 	]\\)" "\\1next\\2")
-		    ("\\([ 	]\\|^\\)if not\\([ 	]\\|$\\)" "\\1unless\\2")
+		  ;; zip(cols, coltypes) => cols.zip(coltypes)
+		  ("\\zip(\\([^*].*\\),[ ]*\\(.+\\))" "\\1.zip(\\2)")
 
-		    ("#!/usr/bin/env python" "#!/usr/bin/env ruby")
+		  ;; Quoted hash elements, e.g
+		  ;; 'abc' => Def
+		  ("\\('[^']+'\\):\\([ 	]\\)*\\(.+\\)$" ;; '
+		   "\\1\\2 => \\3")
+		  ("\\(\"[^\"]+\"\\):\\([ 	]\\)*\\(.+\\)$"
+		   "\\1\\2 => \\3")
 
-		    (" is not None" "")
-		    (" is None" ".nil?")
-		    ("len(\\(.*\\))" "\\1.size")
-		    ("repr(\\(.*\\))" "\\1.inspect")
-		    ("str(\\(.*\\))" "\\1.to_s")
+		  ("\\([ 	]\\|^\\)continue\\($\\|[ 	]\\)" "\\1next\\2")
+		  ("\\([ 	]\\|^\\)if not\\([ 	]\\|$\\)" "\\1unless\\2")
 
-		    ;; isinstance(tablefmt, TableFormat) =>
-		    ;; tablefmt.kind_of?(TableFormat)
-		    ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
-		     "\\1.kind_of?(\\2)")
+		  ("#!/usr/bin/env python" "#!/usr/bin/env ruby")
 
-		    ("re.sub(\\(.*\\),[ ]*\\(.*\\),[ ]*\\(.*\\))"
-		     "\\3.gsub(\\1, \\2)")
-		    ("re.match(\\(.*\\),[ ]*\\(.*\\))" "\\1.match(\\2)")
-		    ("r'\\(.*\\)'" "%r{\\1}")
-		    ("r\"\\(.*\\)\"" "%r{\\1}")
-		    ("import re$" "#uses regexps")
-		    ("import[:blank]+ urllib" "require 'uri'")
-		    ("import urllib" "require 'uri'")
-		    ("import urllib" "require 'uri'")
-		    ("import \\(.*\\)$" "require '\\1'")
-		    ("class \\(.*\\)(\\(.*\\)):$" "class \\1 < \\2")
-		    ("class \\(.*\\):$" "class \\1") ;; has to come after above
-		    ("def __repr__(self):$" "def inspect")
-		    ("def __str__(self):$" "def to_s")
-		    ("def __init__(self, \\(.*\\)):$" "def initialize(\\1")
-		    ("def __init__(self):$" "def initialize")
+		  (" is not None" "")
+		  (" is None" ".nil?")
+		  ("len(\\(.*\\))" "\\1.size")
+		  ("repr(\\(.*\\))" "\\1.inspect")
+		  ("str(\\(.*\\))" "\\1.to_s")
 
-		    ("def \\(.*\\)(\\(.*\\)[*][*]\\(.*\\)):$" "def \\1(\\2\\3={})")
+		  ;; isinstance(tablefmt, TableFormat) =>
+		  ;; tablefmt.kind_of?(TableFormat)
+		  ("isinstance(\\(.*\\),[ ]*\\(.*\\))"
+		   "\\1.kind_of?(\\2)")
 
-		    ("def \\(.*\\)(self, \\(.*\\)):$" "def \\1(\\2)")
-		    ("def \\(.*\\)(self):$" "def \\1")
-		    ("elif \\(.*\\):" "elsif \\1") ;; has to come before "if"
-		    ("if \\(.*\\):" "if \\1")
-		    ("except \\(.*\\) as \\(.*\\):" "rescue \\1 => \\2")
-		    ("except \\(.*\\):" "rescue \\1")
-		    ("except:" "rescue")
-		    ("else:" "else")
-		    ("basestring" "String")
-		    (".lower" ".downcase")
-		    (".upper" ".upcase")
-		    ("def \\(.*\\)):$" "def \\1)")
-		    ("None" "nil") ("True" "true") ("False" "false")
-		    ("try:" "begin")
+		  ("re.sub(\\(.*\\),[ ]*\\(.*\\),[ ]*\\(.*\\))"
+		   "\\3.gsub(\\1, \\2)")
+		  ("re.match(\\(.*\\),[ ]*\\(.*\\))" "\\1.match(\\2)")
+		  ("r'\\(.*\\)'" "%r{\\1}")
+		  ("r\"\\(.*\\)\"" "%r{\\1}")
+		  ("import re$" "#uses regexps")
+		  ("import[:blank]+ urllib" "require 'uri'")
+		  ("import urllib" "require 'uri'")
+		  ("import urllib" "require 'uri'")
+		  ("import \\(.*\\)$" "require '\\1'")
+		  ("class \\(.*\\)(\\(.*\\)):$" "class \\1 < \\2")
+		  ("class \\(.*\\):$" "class \\1") ;; has to come after above
+		  ("def __repr__(self):$" "def inspect")
+		  ("def __str__(self):$" "def to_s")
+		  ("def __init__(self, \\(.*\\)):$" "def initialize(\\1")
+		  ("def __init__(self):$" "def initialize")
 
-		    ("print[:blank:]+\\(.*\\)$" "puts \\1")
+		  ("def \\(.*\\)(\\(.*\\)[*][*]\\(.*\\)):$" "def \\1(\\2\\3={})")
 
-		    ;; The following is just for the SolveBio API.
-		    ;; It does no harm otherwise.
-		    ("SolveBio::" "solvebio.")
-		    ))
+		  ("def \\(.*\\)(self, \\(.*\\)):$" "def \\1(\\2)")
+		  ("def \\(.*\\)(self):$" "def \\1")
+		  ("elif \\(.*\\):" "elsif \\1") ;; has to come before "if"
+		  ("if \\(.*\\):" "if \\1")
+		  ("except \\(.*\\) as \\(.*\\):" "rescue \\1 => \\2")
+		  ("except \\(.*\\):" "rescue \\1")
+		  ("except:" "rescue")
+		  ("else:" "else")
+		  ("basestring" "String")
+		  (".lower" ".downcase")
+		  (".upper" ".upcase")
+		  ("def \\(.*\\)):$" "def \\1)")
+		  ("None" "nil") ("True" "true") ("False" "false")
+		  ("try:" "begin")
+
+		  ("print[:blank:]+\\(.*\\)$" "puts \\1")
+
+		  ;; The following is just for the SolveBio API.
+		  ;; It does no harm otherwise.
+		  ("SolveBio::" "solvebio.")
+		  ))
       (let ((replace-fn (or replace-fn 'query-replace-regexp))
 	    (regexp    (car args))
 	    (to-string (cadr args))
@@ -112,7 +119,7 @@ corresponding Python lingo."
 	 (ruby-name (concat (file-name-sans-extension orig-name) ".rb")))
     (set-visited-file-name ruby-name)
     (ruby-mode)
-    (python2ruby-regexp-search-replace (point-min))
+    (python2ruby-regexp-search-replace (point-min) (point-max))
     ))
 
 (defun python2ruby-buffer-rough (buffer)
