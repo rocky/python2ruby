@@ -4,10 +4,12 @@ corresponding Ruby strings"
   (dolist (args '(
 
 		  ;; Some unit testing things
-		  ("import unitttest" "require 'unittest'")
+		  ("import unitttest" "require 'test/unit'")
 		  ;; Should come before True -> true
 		  ("self.assertTrue" "assert")
 		  ("self.assertEqual" "assert_equal")
+		  ("unittest.skip" "skip")
+		  ("unittest.TestCase" "Test::Unit::TestCase")
 
 		  ;; Python's dictionary update is Ruby's Hash
 		  ;; merge or merge!  We rely on interactive aspect
