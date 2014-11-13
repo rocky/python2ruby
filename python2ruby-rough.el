@@ -20,6 +20,8 @@ corresponding Ruby strings"
 		  ;; user gets tired.
 		  ("\\.update(" ".merge!(")
 
+		  ("\\.append(\\(.*\\))" " << \\1")
+
 		  ;; re.search(a, b) => a.match(b)
 		  ("re\\.search\\(.*\\), [ ]*" "\\1.match(")
 
