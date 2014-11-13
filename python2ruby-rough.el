@@ -8,6 +8,8 @@ corresponding Ruby strings"
 		  ;; Should come before True -> true
 		  ("self.assertTrue" "assert")
 		  ("self.assertEqual" "assert_equal")
+		  ("self.assertRaises(\\(.*\\),\\(.*\\))" "assert_raise \\1 do \\2 end")
+		  ("self.assertRaises(\\(.*\\),\\(.*\\)" "assert_raise \\1 do")
 		  ("unittest.skip" "skip")
 		  ("unittest.TestCase" "Test::Unit::TestCase")
 
@@ -131,7 +133,7 @@ corresponding Python lingo."
     )
 )
 
-(defun python2ruby2-region-rough (from to)
+(defun python2ruby-region-rough (from to)
   (interactive "r")
   (python2ruby-regexp-search-replace from to)
 )
