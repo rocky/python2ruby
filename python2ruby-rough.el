@@ -13,6 +13,8 @@ corresponding Ruby strings"
 		  ("unittest.skip" "skip")
 		  ("unittest.TestCase" "Test::Unit::TestCase")
 
+		  ("int(\\(.*\\))" "Integer(\\1)")
+
 		  ;; Python's dictionary update is Ruby's Hash
 		  ;; merge or merge!  We rely on interactive aspect
 		  ;; to allow a person to determine which is

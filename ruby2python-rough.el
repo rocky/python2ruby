@@ -16,8 +16,13 @@ corresponding Ruby strings"
 		    ("end"       "pass")
 		    (".upcase"   ".upper" )
 
+		    ("\\.merge!(" ".update(")
+		    ("\\.merge(" ".update(")
+
 		    ("assert_equal" "self.assertEqual")
 		    ("assert_raise" "self.assertRaises")
+
+		    ("Integer(\\(.*\\))" "int(\\1)")
 
 		    ;; Note have to handle things like
 		    ;; ... False,
