@@ -45,6 +45,10 @@ corresponding Ruby strings"
 		    ;; Nuke ".new in Object creation.
 		    ("\\(.+\\).new(\\(.+\\))"  "\\1(\\2)")
 
+		    ("Test::Unit::TestCase" "unittest.TestCase")
+		    ("def setup" "def setUp(self):")
+		    ("def teardown" "def tearDown(self):")
+
 		    ;; The following is just for the SolveBio API.
 		    ;; It does no harm otherwise.
 		    ("SolveBio::" "solvebio.")
