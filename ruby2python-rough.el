@@ -49,6 +49,13 @@ corresponding Ruby strings"
 		    ("def setup" "def setUp(self):")
 		    ("def teardown" "def tearDown(self):")
 
+		    ("__FILE__" "__file__")
+		    ("File\\.join" "os.path.join")
+		    ("File\\.dirname" "os.path.dirname")
+
+		    ("def setup" "def setUp(self):")
+		    ("def teardown" "def tearDown(self):")
+
 		    ;; The following is just for the SolveBio API.
 		    ;; It does no harm otherwise.
 		    ("SolveBio::" "solvebio.")
