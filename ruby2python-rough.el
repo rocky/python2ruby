@@ -1,6 +1,6 @@
 (defun ruby2python-regexp-search-replace (&optional start end replace-fn)
-  "A rough-cut conversion of common Python strings to
-corresponding Ruby strings"
+  "A rough-cut conversion of common Ruby strings to
+corresponding Python strings"
     (dolist (args '(
 		    ("class \\(\\w+\\) < \\(.+\\)" "class \\1(\\2):")
 
@@ -53,9 +53,6 @@ corresponding Ruby strings"
 		    ("File\\.join" "os.path.join")
 		    ("File\\.dirname" "os.path.dirname")
 
-		    ("def setup" "def setUp(self):")
-		    ("def teardown" "def tearDown(self):")
-
 		    ;; The following is just for the SolveBio API.
 		    ;; It does no harm otherwise.
 		    ("SolveBio::" "solvebio.")
@@ -80,9 +77,8 @@ corresponding Ruby strings"
       )))
 
 (defun ruby2python-rough ()
-  "A rough-cut conversion of common Python lingo to the
-corresponding Ruby lingo. This should be done after adding Ruby
-end's to the python code"
+  "A rough-cut conversion of common Ruby lingo to the
+corresponding Python lingo."
   (interactive "")
   (let* ((orig-name (buffer-name))
 	 (python-name (concat (file-name-sans-extension orig-name) ".py")))
