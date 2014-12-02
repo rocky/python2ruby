@@ -1,53 +1,69 @@
 (defun perl2python-regexp-search-replace (&optional start end replace-fn)
   "A rough-cut conversion of common Perl strings to
 corresponding Python strings"
-    (dolist (args '(
-		    ("use \\(.+\\);"     "import \\1")
+  (dolist (args '(
 
-		    ;; "new" custom cases come before general cases
-		    ("sub new\\([ 	].*\\){" "def __init__(self):")
-		    ("sub new \\(.*\\){" "def __init__ \\1:")
-		    ("sub new \\(.*\\){" "def __init__ \\1:")
-		    ("sub \\(.+\\){"     "def \\1:")
+		  ;; Nuke these. Should come before general "use" translation.
+		  ("use strict;" "")
+		  ("use warnings;" "")
+		  ("use constant \\(.+\\) => \\(.+\\);"
+		   "\\1 = \\2")
 
-		    ("^=head[1-4]"      "'''")
-		    ("^=cut"            "'''")
+		  ("use \\(.+\\);"     "import \\1")
 
-		    ;; It is presumed that this after an new/__init__
-		    ("my $class = shift;" "")
+		  ;; "new" custom cases come before general cases
+		  ("sub new\\([ 	].*\\){" "def __init__(self):")
+		  ("sub new \\(.*\\){" "def __init__ \\1:")
+		  ("sub new \\(.*\\){" "def __init__ \\1:")
+		  ("sub \\(.+\\){"     "def \\1:")
+
+		  ("^=head[1-4]"      "'''")
+		  ("^=cut"            "'''")
+		  ("^=pod"            "'''")
+
+		  ("use strict;" "")
+		  ("unless (caller) {"  "if __name__=='__main__'")
+
+		  ("\\([ 	]+\\)last;" "\\1break")
+		  ;; Not quite right, but we should have something else
+		  ;; to convert break if.
+		  ("\\([ 	]+\\)last if" "\\1break if")
+
+		  ;; It is presumed that this after an new/__init__
+		  ("my $class = shift;" "")
 
 
-		    ;; Should come before general arrow (->) handling
-		    ("->new"  "")
+		  ;; Should come before general arrow (->) handling
+		  ("->new"  "")
 
-		    ;; Should come before handling colon (:)
-		    ("\\([ 	(]+\\)defined \\(.+\\)\\([ 	)]+\\)"
-		     "\\1\\2\\3is not None")
-		    ("\\([ 	(]+\\)defined(\\(.+\\))"
-		     "\\1\\2 is not None")
+		  ;; Should come before handling colon (:)
+		  ("\\([ 	(]+\\)defined \\(.+\\)\\([ 	)]+\\)"
+		   "\\1\\2\\3is not None")
+		  ("\\([ 	(]+\\)defined(\\(.+\\))"
+		   "\\1\\2 is not None")
 
-		    ;; custom cases before general cases
-		    ("} elsif (\\(.+\\)) {"  "elif \\1:")
-		    ("elsif (\\(.+\\)) {"  "elif \\1:")
-		    ("} else {"  "else:")
-		    ("else {"  "else:")
+		  ;; custom cases before general cases
+		  ("} elsif (\\(.+\\)) {"  "elif \\1:")
+		  ("elsif (\\(.+\\)) {"  "elif \\1:")
+		  ("} else {"  "else:")
+		  ("else {"  "else:")
 
-		    ("if (\\(.+\\)) {"  "if \\1:")
-		    ("unless[ 	]*(\\(.+\\)) {"  "if not \\1:")
+		  ("if (\\(.+\\)) {"  "if \\1:")
+		  ("unless[ 	]*(\\(.+\\)) {"  "if not \\1:")
 
-		    (" && "  " and ")
-		    (" eq "  " == ")
-		    (" ne "  " != ")
-		    ("->"  ".")
-		    ("[ 	]+undef"  "None")
+		  (" && "  " and ")
+		  (" eq "  " == ")
+		  (" ne "  " != ")
+		  ("->"  ".")
+		  ("\\([ 	]\\)+undef"  "\\1None")
 
-		    ("[ 	]+=> "  ": ")
+		  ("[ 	]+=> "  ": ")
 
-		    ("^1;$"      "")
+		  ("^1;$"      "")
 
-		    ("\\$self"  "self")
+		  ("\\$self"  "self")
 
-		    ))
+		  ))
       (let ((replace-fn (or replace-fn 'query-replace-regexp))
 	    (regexp    (car args))
 	    (to-string (cadr args))
