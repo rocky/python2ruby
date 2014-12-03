@@ -55,7 +55,9 @@ corresponding Python strings"
 		  (" eq "  " == ")
 		  (" ne "  " != ")
 		  ("->"  ".")
-		  ("\\([ 	]\\)+undef"  "\\1None")
+		  ("\\(^\\|[ 	]+\\)undef"  "\\1None")
+		  ("\\(^\\|[ 	]+\\)is \\(.+\\);$"  "\\1self.assertEqual(\\2)")
+		  ("\\(^\\|[ 	]+\\)ok \\(.+\\);$"  "\\1self.assertTrue(\\2)")
 
 		  ("[ 	]+=> "  ": ")
 
